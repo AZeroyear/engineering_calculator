@@ -6,6 +6,7 @@ class EngineeringCalculatorTest < Minitest::Test
   end
 
   def test_it_does_something_useful
-    assert false
+    keisan = ::EngineeringCalculator::Calculator.new("20Mpa + 10Mpa =")
+    assert_equal keisan.result, ["20Mpa+", "10Mpa="]
   end
 end

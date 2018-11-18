@@ -1,44 +1,54 @@
 # EngineeringCalculator
 
-機能一覧
+### a. 使い方
+calc = EngineeringCalculator.new("100kgg / 20mm2")  
+calc.result #=> ["5Mpa","100kgg/20mm2"]  
+calc.calc("10mpa + 20psi")  
+calc.result #=> ["30Mpa","10Mpa+20Mpa"]  
+calc.evaluate("100mpa +10m") #=> fail  
 
-. 使い方
-calc = EngineeringCalculator.new("100kg / 20mm2")
-calc.result #=> 5Mpa
-calc.calc("10mpa + 20psi")
-calc.result #=> 20mpa
-calc.evaluate(100mpa + 10m) #=> Fail
+### b. 実装計画
+#### 1) (), \*, / で数式を取り出す
+  ex: 100kg / 20mm2 + 10psi =  
+  [100kg/20mm2,+,10psi,=]  
 
-. 実装計画
-1) (), \*, / で数式を取り出す
-例: 100kg / 20mm2 + 10psi =
-[100kg/20m2,+,10psi,=]
+  ex: (100kgg + 10pondg) / 20kg/mm2 + 10psi =  
+  [100kgg + 10pondg,/,20mm2,+,10psi,=]  
 
-例: (100kgg + 10pondg) / 20mm2 + 10psi =
-[100kgg + 10pondg,/,20mm2,+,10psi,=]
+#### 2) Validate?メソッドで単位の並びを評価
+  a. 単位評価  
+  +, - で同じカテゴリーに属していない単位が選択されていたらFailを返して終了。  
+  Mpa + psi => true  
+  Mpa * Mpa/s => true  
+  Mpa + m => fail  
+  Mpa + kg => fail  
 
-2) Validate?メソッドで単位の並びを評価
-(単位評価)
-+, - で同じカテゴリーに属していない単位が選択されていたらFailを返して終了。
-Mpa + psi => OK
-Mpa * Mpa/s => OK
-Mpa + m => NG
-Mpa + kg => NG
+  b. 計算式評価  
+  ()の数が間違っている。一番最後の)抜きはOK。  
+    ex: ((100kg/20m2 + 20psi) + 20 => true  
+    (20+10) * 100mpa) => fail  
 
-(計算入力評価)
-()の数が間違っている。一番最後の)抜きはOK
-((100kg/20m2 + 20psi) + 20 => OK
-(20+10) * 100mpa) => NG
+  //, ** など計算式が連続している。  
 
-3) 単位換算
-単位抜き
-  +,-並びに評価されているもの
-  ex) 100 + 20psi => 100Mpa + 20psi
-  \*,/は単位無しの倍数とみなす
-  ex) 100 * 20mpa #=> 20000Mpa
+  c. 単位抜き  
 
-4)
 
+#### 3) 単位換算
+  a.メモ書き  
+  \*,/は単位無しの倍数とみなす。  
+    ex) 100 * 20mpa #=> 20000Mpa  
+  +,-並びに記載されているもので単位が一つしかない時は、その単位とする。  
+    ex) 100 + 20psi => 100Mpa + 20psi  
+
+  b.単位換算表(yml形式)  
+
+
+#### 4) 数値計算
+  a. 数式だけを取り出す  
+  b. evalを使用して計算する  
+
+#### 5) 単位計算
+  a.
 
 ## Installation
 
