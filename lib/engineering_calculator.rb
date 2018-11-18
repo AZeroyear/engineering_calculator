@@ -4,21 +4,27 @@ module EngineeringCalculator
   class Calculator
     attr_accessor :result
 
-    def initialize(keisan)
-      #1. 計算式(+,-,*,/)で文字列を分割して配列に格納
-
-      keisan.delete!(" ")
+    def initialize(keisan="")
       @result = split_each_calc(keisan)
     end
 
     def split_each_calc(keisan)
-      result = []
-      i = 0
-      keisan.scan(/\d+.*?[\+\-\*\=\/][\d\s]/) do |mathced|
-        result[i] = mathced
-        i += 1
+      keisan.delete!(" ")
+      result = keisan.split(/([\(\)\+\*\/])|(\d+[^\d\/]+\/[^\d\/]+\d*)|(\^\d*)/)
+      result.reject!{ |c| c.empty? }
+
+      result.map! do |elem|
+        elem.sub!(/^\^/, "**")
+        elem =~ (/(^\d+)/)
+        [$1||elem, nil, $1, $']
       end
-      result
+      #calc(result)
+    end
+
+    def calc(result)
+      formula = String.new
+      result.each { |elem| formula << elem[0] }
+      eval(formula)
     end
   end
 end
