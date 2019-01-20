@@ -2,7 +2,7 @@ require "engineering_calculator/version"
 require 'yaml'
 
 module EngineeringCalculator
-  class Calculator
+  class CalculatorOld
     attr_accessor :result
     def initialize(keisan="")
       @arithmetic = /(\^\(?[\+\-]?\d+\/?\d*\)?)|([\(\)\+\-\*\/])/

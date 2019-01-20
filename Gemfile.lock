@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    engineering_calculator (0.1.0)
+    engineer_calculator (0.1.0)
 
 GEM
   remote: https://rubygems.org/
@@ -14,7 +14,7 @@ PLATFORMS
 
 DEPENDENCIES
   bundler (~> 1.16)
-  engineering_calculator!
+  engineer_calculator!
   minitest (~> 5.0)
   rake (~> 10.0)
 
