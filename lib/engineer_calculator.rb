@@ -21,28 +21,30 @@ module Engineer
             [each_formula[:value], nil]
           else
             convert_value = si_unit(each_formula[:unit])
-            [each_formula[:value].to_f * convert_value[0].to_f, convert_value[1].unshift("(").push(")")]
+            [each_formula[:value].to_f / convert_value[0].to_f, convert_value[1].unshift("(").push(")")]
           end
         end
         value = String.new
         units = []
         formula.each do |x|
-          value << x[0].to_s + (x[0] =~ reg(:ari) ? "" : ".rationalize")
+          value << x[0].to_s + (x[0].to_s =~ reg(:ari) ? "" : ".rationalize")
           units << x[1]
         end
         return [eval(value), units.flatten.join, formula.join] unless @error[:unit_not_found].nil?
-        [eval(value).to_f, calc_unit(units.flatten), formula.inject(String.new){|f, v| f << v.flatten.uniq.join}]
+        [sprintf("%.05g", eval(value)), calc_unit(units.flatten), formula.inject(String.new){|f, v| f << v[0].to_s + (v[0] != v[1].join ? v[1].join : "")}]
       #rescue
       #  "Sorry, we could not calculate"
       #end
     end
 
     def si_unit(units)
-      unit = units.scan(/((?:#{reg(:metric)})?#{reg(:alter)})|(#{reg(:variable)})|((?:#{reg(:metric)})?(?:#{reg(:base)}|g){1}-*\d*)|(#{reg(:ari)})|(.)/)
+      unit_reg = /((?:#{reg(:metric)})?#{reg(:alter)})|(#{reg(:variable)})|((?:#{reg(:metric)})?(?:#{reg(:base)}|g){1}-*\d*)|(#{reg(:ari)})|(.)/
+      unit = units.scan(unit_reg)
       unit.map! do |each_unit|
         if each_unit[4]
           @error[:unit_not_found] ||= ["This unit could not be found"]
           @error[:unit_not_found].unshift(units)
+          p each_unit(unit_reg/i)
           break
         elsif each_unit[0] #alter
           keisan = convert_to_si_unit(each_unit[0])
@@ -202,7 +204,7 @@ module Engineer
       else
         unit[:metric] ? convert_metric(unit[:metric]).to_f.rationalize**num.to_f.rationalize : 1
       end
-      [metric.to_f, unit_base || unit[:base] + unit[:numeric].to_s]
+      [1 / metric.to_f, unit_base || unit[:base] + unit[:numeric].to_s]
     end
 
     def convert_metric(metric)
