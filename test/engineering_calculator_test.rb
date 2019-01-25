@@ -9,6 +9,8 @@ class EngineeringCalculatorTest < Minitest::Test
     assert_equal @eng_calc.calc("100m/20s"), ["5", "m/s", "100.0(m)/20.0(s)"]
     assert_equal @eng_calc.calc("1psi"), ["6894.8", "kg/(m*s2)", "6894.757293168324(kg/(m*s2))"]
     assert_equal @eng_calc.calc("10PSI*20s2"), ["1.379e+06", "kg/m", "68947.57293168324(kg/(m*s2))*20.0(s2)"]
+    assert_equal @eng_calc.calc("10PSI/20/s"), ["3447.4", "kg/(m*s)", "68947.57293168324(kg/(m*s2))/20.0(/s)"]
+    assert_equal @eng_calc.calc("10PSI/20(/s)"), ["3447.4", "kg/(m*s)", "68947.57293168324(kg/(m*s2))/20.0((/s))"]
   end
 
   def test_si_unit_method

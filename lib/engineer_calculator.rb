@@ -72,6 +72,7 @@ module Engineer
         unit_si << each_unit[1]
       end
       value.gsub!(/^\//,"1/")
+      value.gsub!(/^\(\//,"(1/")
       [eval(value), unit_si.flatten]
     end
 
