@@ -4,10 +4,10 @@ require 'yaml'
 module Engineer
   class Calculator
     include Math
-    attr_reader :error, :alter
+    attr_accessor :error, :alter
     def initialize
       @error = {}
-      @alter = {}
+      @opt = nil
     end
 
     def calc(formula)
@@ -17,63 +17,68 @@ module Engineer
         formula.map! do |each_formula|
           if each_formula[:value] =~ /#{reg(:ari)}/
             [each_formula[:value], [each_formula[:value]]]
-          elsif each_formula[:unit].empty?
-            [each_formula[:value], nil]
+          elsif each_formula[:unit].nil?
+            [each_formula[:value], []]
           else
             each_formula[:unit]
-            convert_value = si_unit(each_formula[:unit])
+            convert_value = convert(each_formula[:unit])
             [each_formula[:value].to_f * convert_value[0].to_f, convert_value[1].unshift("(").push(")")]
           end
         end
         value = String.new
         units = []
         formula.each do |x|
-          value << x[0].to_s + (x[0].to_s =~ reg(:ari) ? "" : ".rationalize")
+          value << x[0].to_s.sub("^","**") + (x[0].to_s =~ reg(:ari) ? "" : ".rationalize")
           units << x[1]
         end
+        @opt = nil
         return [eval(value), units.flatten.join, formula.join] unless @error[:unit_not_found].nil?
-        [sprintf("%.05g", eval(value)), calc_unit(units.flatten), formula.inject(String.new){|f, v| f << v[0].to_s + (v[0] != v[1].join ? v[1].join : "")}]
+        converted_formula = formula.inject(String.new){|f, v| f << v[0].to_s + (v[0] != v[1].join ? v[1].join : "") }
+        [sprintf("%.05g", eval(value)), calc_unit(units.flatten), converted_formula]
       #rescue
       #  "Sorry, we could not calculate"
       #end
     end
 
-    def si_unit(units)
-      unit = units.scan(unit_reg)
-      unless unit.each { |each_unit| break false unless each_unit[4].nil? }
-        opt = :upper
-        unit = units.upcase.scan(unit_reg(opt))
-      end
-
-      unit.map! do |each_unit|
-        if each_unit[4]
-          @error[:unit_not_found] ||= [" could not be found"]
-          @error[:unit_not_found].unshift(units)
-          return [1, [units]]
-        elsif each_unit[0] #alter
-          keisan = convert_to_si_unit_from_alter(each_unit[0],opt)
-          keisan[1] = split_si_unit keisan[1]
-          [keisan[0]*keisan[1][0], keisan[1][1]]
-        elsif each_unit[1] #variable_unit
-          keisan = convert_to_si_unit_from_variable(each_unit[1])
-          keisan[1] = split_si_unit(keisan[1])
-          [keisan[1][0]/keisan[0], keisan[1][1]]
-        elsif each_unit[2] #si_unit
-          split_si_unit each_unit[2], opt
-        elsif each_unit[3] #演算子
-          [each_unit[3], each_unit[3]]
+    def convert(units)
+      unit = {value: String.new, unit: []}
+      convert_unit = try_split_each_unit(units).map { |unit| convert_to_si_unit(unit) }.map do |c_value, c_unit, c_type|
+        if c_type
+          unit[:value] << c_unit
+          unit[:unit] << c_unit
+        else
+          unit[:value] << "(" + c_value.to_s + "*"
+          si_unit = split_si_unit(c_unit)
+          unit[:value] << si_unit[0].to_s + ")"
+          unit[:unit] << si_unit[1]
         end
       end
+      [eval(unit[:value].sub(/\)\(/,")*(")), unit[:unit].flatten]
+    end
 
-      value = String.new
-      unit_si = []
-      unit.each do |each_unit|
-        value << each_unit[0].to_s
-        unit_si << each_unit[1]
+    def try_split_each_unit(units)
+      type = [:base, :alter, :variable, :base, :ari]
+      try_method = [
+        {reg: proc {/#{unit_reg}/}, case: @opt=nil, type: nil},
+        {reg: proc {/#{unit_reg}/}, case: @opt=:upcase, type: nil},
+        {reg: proc {/(#{reg(:variable)})/}, case: @opt=:upcase, type: :variable},
+      ]
+      try_method.each do |try|
+        unit = []
+        @opt = try[:case]
+        app_unit = send_method(units, @opt).scan(try[:reg].call).map do |e_unit|
+          e_unit.each_with_index { |a_unit,i| unit.push({(try[:type] || type[i]) => a_unit}) if a_unit }
+        end
+        next unless app_unit.join == send_method(units, @opt)
+        return unit
       end
-      value.gsub!(/^\//,"1/")
-      value.gsub!(/^\(\//,"(1/")
-      [eval(value), unit_si.flatten]
+      @error[:unit_not_found] ||= [" could not be found"]
+      @error[:unit_not_found].unshift(units)
+      {unit_not_found: units}
+    end
+
+    def send_method(str, method=nil)
+      method ? str.send(method) : str
     end
 
     def calc_unit(units) #配列で単位を受け取る。
@@ -90,7 +95,7 @@ module Engineer
       end
       units.compact!
       units.reject!{ |x| x =~ /\(|\)/ }
-      search_unit units
+      search_unit(units)
       unit_arrange units
     end
 
@@ -99,12 +104,14 @@ module Engineer
       neg = []
       units.each do |unit|
         num = unit.match(/(?<base>#{reg(:base)}){1}(?<num>-*\d*)/)
-        if num[:num].nil? || num[:num].to_i.positive?
-          number = num[:num].to_i == 1 ? nil : num[:num]
-          pos << num[:base] + number.to_s
-        else
-          number = num[:num].to_i == -1 ? nil : - (num[:num].to_i)
-          neg << num[:base] + number.to_s
+        unless num.nil?
+          if num[:num].nil? || num[:num].to_i.positive?
+            number = num[:num].to_i == 1 ? nil : num[:num]
+            pos << num[:base] + number.to_s
+          else
+            number = num[:num].to_i == -1 ? nil : - (num[:num].to_i)
+            neg << num[:base] + number.to_s
+          end
         end
       end
       div = neg.size > 1 ? ("/" + "(" + neg.join("*") + ")") : (neg.empty? ? nil : "/" + neg.join.to_s)
@@ -112,16 +119,21 @@ module Engineer
     end
 
     def search_unit(units)
-      si_base_unit.merge(si_derived_unit).each do |key, value|
-        break @alter = key if multi_div_unit(split_si_unit(value)[1]).sort == multi_div_unit(units).sort
+      all_unit = []
+      si_base_unit.merge(si_derived_unit).delete_if { |key, value|
+        multi_div_unit(split_si_unit(value)[1]).sort != multi_div_unit(units).sort
+      }.each do |unit_name, value|
+        all_unit << [unit_name, si_alter_unit[unit_name].join(" : ")]
+        all_unit << [unit_name, variable_unit[unit_name]]
       end
+      all_unit
     end
 
     def plus_minus_unit(array)
       array.each_with_index do |value, i|
         unless i == 0 || (array[i-1].sort == array[i].sort)
           @error[:plus_minus] ||= ["is different unit. Plus minus is imposshible"]
-          @error[:plus_minus].unshift "#{array[i-1].join} + #{array[i].join}"
+          @error[:plus_minus].unshift "#{unit_arrange(array[i-1])} + #{unit_arrange(array[i])}"
         end
       end
       array[0]
@@ -146,7 +158,6 @@ module Engineer
       end_par = "+"
       units.compact! unless units.nil?
       units.each do |unit|
-        num = unit.match(/(?<base>#{reg(:base)}){1}(?<num>-*\d*)/)
         case unit
         when "*", "・", "⋅"
           ari = "+" unless end_par == "-"
@@ -157,6 +168,7 @@ module Engineer
         when ")"
           end_par = "+"
         else
+          num = unit.match(/(?<base>#{reg(:base)}){1}(?<num>-*\d*)/)
           base = num[:base]
           num = num[:num].empty? ? 1 : num[:num]
           unit_hash[base] = eval(unit_hash[base].to_s + ari + num.to_s)
@@ -181,9 +193,9 @@ module Engineer
       array.unshift([0,formula.size-1])
     end
 
-    def split_si_unit(si_unit, opt=nil)
+    def split_si_unit(si_unit)
       unit = si_unit.split(/([\*\/\(\)])/).reject(&:empty?).map do |s_unit|
-        s_unit =~ /([\*\/\(\)])/ ? s_unit : extraction_metric(s_unit, opt)
+        s_unit =~ /([\*\/\(\)])/ ? s_unit : extraction_metric(s_unit)
       end
       value = String.new
       unit_si = []
@@ -200,14 +212,13 @@ module Engineer
       [eval(value.gsub(/^(#{reg(:ari)})/,"")), unit_si]
     end
 
-    def extraction_metric(si_unit, opt = nil)
+    def extraction_metric(si_unit)
       unit = {}
-      si_unit.upcase! if opt
-      si_unit.match(/(?<metric>#{reg(:metric, opt)})?(?<base>(#{reg(:base, opt)}|g){1})(?<numeric>-*\d)*/) do |sp_unit|
-        sp_unit[0]
+      si_unit.upcase! if @opt
+      si_unit.match(/(?<metric>#{reg(:metric)})?(?<base>(#{reg(:base)}|g){1})(?<numeric>-*\d)*/) do |sp_unit|
         unit[:original] = sp_unit[0]
-        unit[:metric] = opt ? metric_prefix_unit.each_key { |metric| break metric if sp_unit[:metric].upcase == metric.upcase } : sp_unit[:metric]
-        unit[:base] = opt ? si_base_unit.each_value { |b_unit| break b_unit if b_unit.upcase == sp_unit[:base].upcase } : sp_unit[:base]
+        unit[:metric] = @opt && sp_unit[:metric] ? metric_prefix_unit.each_key { |metric| break metric if sp_unit[:metric].upcase == metric.upcase } : sp_unit[:metric]
+        unit[:base] = @opt ? si_base_unit.each_value { |b_unit| break b_unit if b_unit.upcase == sp_unit[:base].upcase } : sp_unit[:base]
         unit[:numeric] = sp_unit[:numeric] || nil
       end
       metric = if unit[:base] == "g"
@@ -227,31 +238,37 @@ module Engineer
       convert_metric(weight_metric).to_f / convert_metric("k").to_f
     end
 
-    def convert_to_si_unit_from_variable(unit)
-      variable_unit.each do |kind, v_unit|
-        return [v_unit[unit], si_base_unit.merge(si_derived_unit)[kind]] if v_unit.key?(unit)
-        v_unit.each do |v_unit_name, value|
-          return [value, si_base_unit.merge(si_derived_unit)[kind]] if v_unit_name.upcase == unit.upcase
+    def convert_to_si_unit(kind_of_unit)
+      if kind_of_unit[:alter]
+        unit = kind_of_unit[:alter]
+        alter_unit = {}
+        unit.match(/(?<metric>#{reg(:metric)})?(?<alter>#{reg(:alter)})/) do |si_unit|
+          alter_unit[:metric] = si_unit[:metric] ? metric_prefix_unit.each { |m_unit, value| break m_unit if si_unit[:metric].upcase == m_unit.upcase } : nil
+          alter_unit[:alter] = @opt ? si_alter_unit.each { |kind, a_unit| break a_unit[0] if si_unit[:alter].upcase == a_unit[0].upcase } : si_unit[:alter]
         end
+        si_alter_unit.each do |key, value|
+          return [convert_metric(alter_unit[:metric]) || 1, si_base_unit.merge(si_derived_unit)[key]] if value.include?(alter_unit[:alter])
+        end
+      elsif kind_of_unit[:variable]
+        unit = kind_of_unit[:variable]
+        variable_unit.each do |kind, v_unit|
+          return [1.rationalize/v_unit[unit].to_f.rationalize, si_base_unit.merge(si_derived_unit)[kind]] if v_unit.key?(unit)
+          v_unit.each do |v_unit_name, value|
+            return [1.rationalize/value.to_f.rationalize, si_base_unit.merge(si_derived_unit)[kind]] if v_unit_name.upcase == unit.upcase
+          end
+        end
+      elsif kind_of_unit[:ari]
+        [kind_of_unit[:ari], kind_of_unit[:ari], :ari]
+      else
+        [1, kind_of_unit[:base]]
       end
     end
 
-    def convert_to_si_unit_from_alter(alter_unit, opt = nil)
-      unit = {}
-      alter_unit.match(/(?<metric>#{reg(:metric, opt)})?(?<alter>#{reg(:alter, opt)})/) do |si_unit|
-        unit[:metric] = si_unit[:metric] ? metric_prefix_unit.each { |m_unit, value| break m_unit if si_unit[:metric].upcase == m_unit.upcase } : nil
-        unit[:alter] = opt ? si_alter_unit.each { |kind, a_unit| break a_unit[0] if si_unit[:alter].upcase == a_unit[0].upcase } : si_unit[:alter]
-      end
-      si_alter_unit.each do |key, value|
-        break [convert_metric(unit[:metric]) || 1, si_base_unit.merge(si_derived_unit)[key]] if value.include?(unit[:alter])
-      end
-    end
-  #private
     def split_unit(formula)
       unit_array = []
       formula_pre = formula.to_s.delete(" ")
-      formula_pre.scan(/(#{reg(:tri)})|(?:(#{reg(:num)})((?:\/?\(?\/?[a-z]+(?:\*[a-z])*(?:\W*[a-z]\d*\)*)*)-*\d*\)?))|(#{reg(:ari)})/i).each do |data|
-        unit_array << { value: (data[0] || data[1] || data[3]), unit: (data[2] || data[3]) }
+      formula_pre.scan(/(#{reg(:tri)})|(?:(#{reg(:num)})(?:#{reg(:double)})*((?:\/?\(?\/?[a-z]+(?:\*[a-z])*(?:\W*[a-z]\d*\)*)*)-*\d*\)?))|(#{reg(:ari)})|(#{reg(:num)}(?:#{reg(:double)})*)/i).each do |data|
+        unit_array << { value: (data[0] || data[1] || data[3] || data[4]), unit: (data[2] || data[3]) }
       end
       unit_array
     end
@@ -276,10 +293,12 @@ module Engineer
       @si_alter_unit ||= YAML.load_file(File.join(__dir__, 'si_alter_unit.yml'))
     end
 
-    def reg(kind_of_unit, opt = nil)
+    def reg(kind_of_unit)
       case kind_of_unit
       when :ari
-        /(?:\^\(?[\+\-]?\d+\/?\d*\)?)|(?:[\(\)\+\-\*\/])/
+        /(?:[\(\)\+\-\*\/])/
+      when :double
+        /(?:\^\(?[\+\-]?\d+\/?\d*\)?)/
       when :num
         /\d+(?:\.\d*)?(?:e[+-]?\d+)?/
       when :tri
@@ -295,16 +314,12 @@ module Engineer
           end
         keys_or_values = hash_name.to_s.include?("si") ? :values : :keys
 
-        if opt == :upper
-          Regexp.new("#{unit_hash.send(keys_or_values).flatten.sort{|a,b| b.size <=> a.size}.map{|x| "|#{Regexp.escape(x)}"}.join.upcase}".gsub(/^\|/,""))
-        else
-          Regexp.new("#{unit_hash.send(keys_or_values).flatten.sort{|a,b| b.size <=> a.size}.map{|x| "|#{Regexp.escape(x)}"}.join}".gsub(/^\|/,""))
-        end
+        Regexp.new("#{unit_hash.send(keys_or_values).flatten.sort{|a,b| b.size <=> a.size}.map{|x| "|#{send_method(Regexp.escape(x), @opt)}"}.join}".gsub(/^\|/,""))
       end
     end
 
-    def unit_reg(opt = nil)
-      /((?:#{reg(:metric, opt)})?#{reg(:alter, opt)})|(#{reg(:variable, opt)})|((?:#{reg(:metric, opt)})?(?:#{reg(:base, opt)}|g){1}-*\d*)|(#{reg(:ari)})|(.)/
+    def unit_reg
+      /(#{reg(:derived)})|((?:#{reg(:metric)})?#{reg(:alter)})|(#{reg(:variable)})|((?:#{reg(:metric)})?(?:#{reg(:base)}|g){1}-*\d*)|(#{reg(:ari)})/
     end
 
   end

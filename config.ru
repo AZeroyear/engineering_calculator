@@ -1,12 +1,10 @@
 #coding: utf-8
-run ShowEnv.new
-
-require_relative 'lib/engineering_calculator'
+require_relative 'lib/engineer_calculator'
 require 'erb'
 
 class ShowEnv
   def initialize
-    @test = EngineeringCalculator::Calculator.new
+    @test = Engineer::Calculator.new
   end
 
 
@@ -29,11 +27,11 @@ class ShowEnv
           <input type="text" name="calc", style="width:50%;height:50px;font-size:20", value= <%= req.params["calc"] %> >
           <button type="submit" style="height:40px;font-size:15px">CALCULATE</button>
         </form>
-        <h3><%= @result[0].to_s + " = " + @result[1].to_s if @result %></h3>
+        <h3><%= @result[2].to_s + " = " + @result[0].to_s + " " + @result[1].to_s if @result %></h3>
         <p>(使用可能な単位一覧 / List of available unit)</p>
       </center>
       <center style="padding-top:20pt">
-      <% @test.unit.each do |unit_name, unit_value| %>
+      <% @test.variable_unit.each do |unit_name, unit_value| %>
         <table>
         <h3><%= unit_name %></h3>
         <% unit_value.each do |unit, value| %>
@@ -57,3 +55,5 @@ class ShowEnv
 
   end
 end
+
+run ShowEnv.new
