@@ -90,21 +90,21 @@ Spectral Intensity:
   - W/(sr*m)
   - watt per steradian metre
 Speed, Velocity:
-  - m*s-1
+  - m/s
 Acceleration:
-  - m*s-2
+  - m/s2
 Jerk, Jolt:
-  - m*s-3
+  - m/s3
 Snap, Jounce:
-  - m*s-4
+  - m/s4
 Angular Velocity:
   - rad/s
 Angular Acceleration:
   - rad/s2
 Frequency Drift:
-  - s-2
+  - /s2
 Volumetric Flow:
-  - m3*s-1
+  - m3/s
 Frequency:
   - Hz
   - hertz

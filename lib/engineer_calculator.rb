@@ -11,38 +11,47 @@ module Engineer
     end
 
     def calc(formula)
+      return nil unless formula
       @error = {}
-      #begin
+      @result = {}
+      @alter = nil
+      begin
         formula = split_unit(formula.gsub("⋅","*")).compact
         formula.map! do |each_formula|
-          if each_formula[:value] =~ /#{reg(:ari)}/
-            [each_formula[:value], [each_formula[:value]]]
-          elsif each_formula[:unit].nil?
+          if each_formula[:unit].nil?
             [each_formula[:value], []]
+          elsif each_formula[:value] =~ /#{reg(:ari)}/
+            [each_formula[:value], [each_formula[:value]]]
           else
             each_formula[:unit]
             convert_value = convert(each_formula[:unit])
-            [each_formula[:value].to_f * convert_value[0].to_f, convert_value[1].unshift("(").push(")")]
+            [sprintf("%.05g", each_formula[:value].to_f * convert_value[0].to_f), convert_value[1].unshift("(").push(")")]
           end
         end
         value = String.new
         units = []
         formula.each do |x|
-          value << x[0].to_s.sub("^","**") + (x[0].to_s =~ reg(:ari) ? "" : ".rationalize")
+          value << x[0].to_s.sub("^","**") + (x[0].to_s =~ Regexp.union(reg(:ari),/(?:#{reg(:num)})*(?:#{reg(:double)})+/) ? "" : ".rationalize") unless x[0].empty?
           units << x[1]
         end
         @opt = nil
-        return [eval(value), units.flatten.join, formula.join] unless @error[:unit_not_found].nil?
-        converted_formula = formula.inject(String.new){|f, v| f << v[0].to_s + (v[0] != v[1].join ? v[1].join : "") }
-        [sprintf("%.05g", eval(value)), calc_unit(units.flatten), converted_formula]
-      #rescue
-      #  "Sorry, we could not calculate"
-      #end
+        return @result = { value: eval(value).to_f, unit: units.flatten.join, convert_formula: formula.join } unless @error[:unit_not_found].nil?
+        converted_formula = formula.inject(String.new){ |f, v| f << v[0].to_s + (v[0] != v[1].join ? v[1].join : "") }
+        @result = { value: sprintf("%.05g", eval(value).to_f), unit: calc_unit(units.flatten), convert_formula: converted_formula }
+        @alter = search_unit(@result)
+        @result
+      rescue StandardError, SyntaxError
+        @error[:inapprehensible] = "Sorry, we could not calculate"
+        nil
+      end
     end
 
     def convert(units)
       unit = {value: String.new, unit: []}
-      convert_unit = try_split_each_unit(units).map { |unit| convert_to_si_unit(unit) }.map do |c_value, c_unit, c_type|
+      convert_unit = try_split_each_unit(units).map { |unit|
+        return [1, [units]] unless @error[:unit_not_found].nil?
+        convert_to_si_unit(unit)
+      }.map do |c_value, c_unit, c_type|
         if c_type
           unit[:value] << c_unit
           unit[:unit] << c_unit
@@ -53,7 +62,7 @@ module Engineer
           unit[:unit] << si_unit[1]
         end
       end
-      [eval(unit[:value].sub(/\)\(/,")*(")), unit[:unit].flatten]
+      [eval(unit[:value].gsub(/\)\(/,")*(")), unit[:unit].flatten]
     end
 
     def try_split_each_unit(units)
@@ -70,6 +79,7 @@ module Engineer
           e_unit.each_with_index { |a_unit,i| unit.push({(try[:type] || type[i]) => a_unit}) if a_unit }
         end
         next unless app_unit.join == send_method(units, @opt)
+        @error[:capitalize] = "upper/lower case shall be follows / 大文字、小文字は使い分けてください" if @opt
         return unit
       end
       @error[:unit_not_found] ||= [" could not be found"]
@@ -95,7 +105,6 @@ module Engineer
       end
       units.compact!
       units.reject!{ |x| x =~ /\(|\)/ }
-      search_unit(units)
       unit_arrange units
     end
 
@@ -118,13 +127,14 @@ module Engineer
       pos.join("*") + div.to_s
     end
 
-    def search_unit(units)
-      all_unit = []
-      si_base_unit.merge(si_derived_unit).delete_if { |key, value|
-        multi_div_unit(split_si_unit(value)[1]).sort != multi_div_unit(units).sort
-      }.each do |unit_name, value|
-        all_unit << [unit_name, si_alter_unit[unit_name].join(" : ")]
-        all_unit << [unit_name, variable_unit[unit_name]]
+    def search_unit(value:, unit:, convert_formula: nil)
+      compare_unit = multi_div_unit(split_si_unit(unit)[1]).sort
+      all_unit = {si_unit: [], variable: []}
+      si_base_unit.merge(si_derived_unit).delete_if { |type, e_unit|
+        compare_unit != multi_div_unit(split_si_unit(e_unit)[1]).sort
+      }.each do |unit_name, e_unit|
+        all_unit[:si_unit] << [unit_name, si_alter_unit[unit_name] ? si_alter_unit[unit_name].join(" : ") : si_base_unit[unit_name] || si_derived_unit[unit_name] ]
+        all_unit[:variable] << [unit_name, variable_unit[unit_name] ? variable_unit[unit_name].map { |v_unit, v_value| [v_unit, value.to_f * v_value.to_f] } : nil]
       end
       all_unit
     end
@@ -132,7 +142,7 @@ module Engineer
     def plus_minus_unit(array)
       array.each_with_index do |value, i|
         unless i == 0 || (array[i-1].sort == array[i].sort)
-          @error[:plus_minus] ||= ["is different unit. Plus minus is imposshible"]
+          @error[:plus_minus] ||= ["is different unit./ 足し算の単位が違います。"]
           @error[:plus_minus].unshift "#{unit_arrange(array[i-1])} + #{unit_arrange(array[i])}"
         end
       end
@@ -219,15 +229,15 @@ module Engineer
         unit[:original] = sp_unit[0]
         unit[:metric] = @opt && sp_unit[:metric] ? metric_prefix_unit.each_key { |metric| break metric if sp_unit[:metric].upcase == metric.upcase } : sp_unit[:metric]
         unit[:base] = @opt ? si_base_unit.each_value { |b_unit| break b_unit if b_unit.upcase == sp_unit[:base].upcase } : sp_unit[:base]
-        unit[:numeric] = sp_unit[:numeric] || nil
+        unit[:numeric] = sp_unit[:numeric] || 1
       end
       metric = if unit[:base] == "g"
         unit_base = "kg"
         convert_metric_weight(unit[:metric])
       else
-        unit[:metric] ? convert_metric(unit[:metric]).to_f.rationalize**(unit[:numeric] || 1).rationalize : 1
+        unit[:metric] ? convert_metric(unit[:metric]).to_f**(unit[:numeric].to_f || 1) : 1
       end
-      [metric.to_f, unit_base || unit[:base] + unit[:numeric].to_s]
+      [metric.to_f, unit_base || unit[:base] + ( unit[:numeric] != 1 ? unit[:numeric].to_s : "" )]
     end
 
     def convert_metric(metric)
@@ -252,9 +262,9 @@ module Engineer
       elsif kind_of_unit[:variable]
         unit = kind_of_unit[:variable]
         variable_unit.each do |kind, v_unit|
-          return [1.rationalize/v_unit[unit].to_f.rationalize, si_base_unit.merge(si_derived_unit)[kind]] if v_unit.key?(unit)
+          return [1.0/v_unit[unit].to_f, si_base_unit.merge(si_derived_unit)[kind]] if v_unit.key?(unit)
           v_unit.each do |v_unit_name, value|
-            return [1.rationalize/value.to_f.rationalize, si_base_unit.merge(si_derived_unit)[kind]] if v_unit_name.upcase == unit.upcase
+            return [1.0/value.to_f, si_base_unit.merge(si_derived_unit)[kind]] if v_unit_name.upcase == unit.upcase
           end
         end
       elsif kind_of_unit[:ari]
@@ -267,7 +277,7 @@ module Engineer
     def split_unit(formula)
       unit_array = []
       formula_pre = formula.to_s.delete(" ")
-      formula_pre.scan(/(#{reg(:tri)})|(?:(#{reg(:num)})(?:#{reg(:double)})*((?:\/?\(?\/?[a-z]+(?:\*[a-z])*(?:\W*[a-z]\d*\)*)*)-*\d*\)?))|(#{reg(:ari)})|(#{reg(:num)}(?:#{reg(:double)})*)/i).each do |data|
+      formula_pre.scan(/(#{reg(:tri)})|(?:(#{reg(:num)}(?:#{reg(:double)})*)((?:\/?\(?\/?[a-z]+(?:\*[a-z])*(?:\W*[a-z]\d*\)*)*)-*\d*\)?))|(#{reg(:ari)})|((?:#{reg(:num)})*(?:#{reg(:double)})?)/i).each do |data|
         unit_array << { value: (data[0] || data[1] || data[3] || data[4]), unit: (data[2] || data[3]) }
       end
       unit_array
