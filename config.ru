@@ -85,9 +85,6 @@ class ShowEnv
       <% end %>
       </center>
       <p style="padding-top:20pt"></p>
-      <center>
-      <iframe src="https://rcm-fe.amazon-adsystem.com/e/cm?o=9&p=48&l=ez&f=ifr&linkID=e9f3e02bf960a9f2a71a66182b108202&t=eas01-22&tracking_id=eas01-22" width="728" height="90" scrolling="no" border="0" marginwidth="0" style="border:none;" frameborder="0"></iframe>
-      </center>
       <footer style="color:#ffffff;background:#191970;text-align: center;"><a href="https://eastazy.work", style="color:#ffffff">Azy - Achieve Zero year - all right reserved<a></footer>
       </body>
       </html>

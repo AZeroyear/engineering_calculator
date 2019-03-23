@@ -1,4 +1,4 @@
-# EngineeringCalculator
+# Engineer Calculator
 
 ### a. 使い方
 calc = EngineeringCalculator.new("100kgg / 20mm2")  
@@ -15,7 +15,7 @@ calc.evaluate("100mpa +10m") #=> fail
 
   ex: (100kgg + 10pondg) / 20kg/mm2 + 10psi #=> [100kgg+ 10pondg,/,20mm2,+,10psi,=]  
   ~~~
-  2. 
+  2.
   2. 配列に変換
   ~~~
   [[数式,数値,単位]]
