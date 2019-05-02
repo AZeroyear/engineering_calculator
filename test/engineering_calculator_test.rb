@@ -5,20 +5,20 @@ class EngineeringCalculatorTest < Minitest::Test
     @eng_calc = Engineer::Calculator.new
   end
   def test_calc_method
-    assert_equal @eng_calc.calc("500*(300/200)"), ["750", "", "500*(300/200)"]
-    assert_equal @eng_calc.calc("10cm+20m"), ["20.1", "m", "0.1(m)+20.0(m)"]
-    assert_equal @eng_calc.calc("100m/20s"), ["5", "m/s", "100.0(m)/20.0(s)"]
-    assert_equal @eng_calc.calc("1psi"), ["6894", "kg/(m*s2)", "6894.0(kg/(m*s2))"]
-    assert_equal @eng_calc.calc("10PSI*20s2"), ["1.3788e+06", "kg/m", "68940.0(kg/(m*s2))*20.0(s2)"]
-    assert_equal @eng_calc.calc("10PSI/20/s"), ["3447", "kg/(m*s)", "68940.0(kg/(m*s2))/20.0(/s)"]
-    assert_equal @eng_calc.calc("10PSI/20(/s)"), ["3447", "kg/(m*s)", "68940.0(kg/(m*s2))/20.0((/s))"]
-    assert_equal @eng_calc.calc("1981(kg/s)/2059m"), ["0.96212", "kg/(s*m)", "1981.0((kg/s))/2059.0(m)"]
-    assert_equal @eng_calc.calc("2cm*300cm/s"), ["0.06", "m2/s", "0.02(m)*3.0(m/s)"]
+    assert_equal @eng_calc.calc("500*(300/200)"), {:value=>"750", :unit=>"", :convert_formula=>"500* ( 300/ 200)  "}
+    assert_equal @eng_calc.calc("10cm+20m"),  {:value=>"20.1", :unit=>"m", :convert_formula=>"0.1(m)+ 20(m) "}
+    assert_equal @eng_calc.calc("100m/20s"), {:value=>"5", :unit=>"m/s", :convert_formula=>"100(m)/ 20(s) "}
+    assert_equal @eng_calc.calc("1psi"), {:value=>"6894.8", :unit=>"kg/(m*s2)", :convert_formula=>"6894.8(kg/(m*s2)) "}
+    assert_equal @eng_calc.calc("10PSI*20s2"), {:value=>"1.379e+06", :unit=>"kg/m", :convert_formula=>"68948(kg/(m*s2))* 20(s2) "}
+    assert_equal @eng_calc.calc("10PSI/20/s"), {:value=>"3447.4", :unit=>"kg/(m*s)", :convert_formula=>"68948(kg/(m*s2))/ 20(/s) "}
+    assert_equal @eng_calc.calc("10PSI/20(/s)"), {:value=>"3447.4", :unit=>"kg/(m*s)", :convert_formula=>"68948(kg/(m*s2))/ 20((/s)) "}
+    assert_equal @eng_calc.calc("1981(kg/s)/2059m"), {:value=>"0.96212", :unit=>"kg/(s*m)", :convert_formula=>"1981((kg/s))/ 2059(m) "}
+    assert_equal @eng_calc.calc("2cm*300cm/s"), {:value=>"0.06", :unit=>"m2/s", :convert_formula=>"0.02(m)* 3(m/s) "}
   end
 
   def test_convert_to_si_unit
-    assert_equal @eng_calc.convert("psi"), [6894.0, ["kg", "/", "(", "m", "*", "s2", ")"]]
-    assert_equal @eng_calc.convert("PSI"), [6894.0, ["kg", "/", "(", "m", "*", "s2", ")"]]
+    assert_equal @eng_calc.convert("psi"), [6894.757293168324, ["kg", "/", "(", "m", "*", "s2", ")"]]
+    assert_equal @eng_calc.convert("PSI"), [6894.757293168324, ["kg", "/", "(", "m", "*", "s2", ")"]]
     assert_equal @eng_calc.convert("kPa"), [10e2, ["kg", "/", "(", "m", "*", "s2", ")"]]
 
   end

@@ -1,4 +1,4 @@
-#require "engineering_calculator/version"
+require "engineer_calculator/version"
 require 'yaml'
 
 module Engineer
@@ -305,23 +305,23 @@ module Engineer
     end
 
     def si_base_unit
-      @si_base_unit ||= YAML.load_file(File.join(__dir__, 'si_base_unit.yml'))
+      @si_base_unit ||= YAML.load_file(File.join(__dir__, '/unit/si_base_unit.yml'))
     end
 
     def si_derived_unit
-      @si_derived_unit ||= YAML.load_file(File.join(__dir__, 'si_derived_unit.yml'))
+      @si_derived_unit ||= YAML.load_file(File.join(__dir__, 'unit/si_derived_unit.yml'))
     end
 
     def variable_unit
-      @variable_unit ||= YAML.load_file(File.join(__dir__, 'variable_unit.yml'))
+      @variable_unit ||= YAML.load_file(File.join(__dir__, 'unit/variable_unit.yml'))
     end
 
     def metric_prefix_unit
-      @metric_prefix ||= YAML.load_file(File.join(__dir__, 'metric_prefix.yml'))
+      @metric_prefix ||= YAML.load_file(File.join(__dir__, 'unit/metric_prefix.yml'))
     end
 
     def si_alter_unit
-      @si_alter_unit ||= YAML.load_file(File.join(__dir__, 'si_alter_unit.yml'))
+      @si_alter_unit ||= YAML.load_file(File.join(__dir__, 'unit/si_alter_unit.yml'))
     end
 
     def reg(kind_of_unit)

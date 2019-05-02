@@ -1,67 +1,5 @@
 # Engineer Calculator
 
-### a. 使い方
-calc = EngineeringCalculator.new("100kgg / 20mm2")  
-calc.result #=> ["5Mpa","100kgg/20mm2"]  
-calc.calc("10mpa + 20psi")  
-calc.result #=> ["30Mpa","10Mpa+20Mpa"]  
-calc.evaluate("100mpa +10m") #=> fail  
-
-### b. 実装計画
-#### 1) 数式を取り出す
-  1. (), \*, / を評価して配列に代入
-  ~~~
-  100kg / 20mm2 + 10psi #=> [100kg/20mm2,+,10psi,=]  
-
-  ex: (100kgg + 10pondg) / 20kg/mm2 + 10psi #=> [100kgg+ 10pondg,/,20mm2,+,10psi,=]  
-  ~~~
-  2.
-  2. 配列に変換
-  ~~~
-  [[数式,数値,単位]]
-  ~~~
-#### 2) Validate?メソッドで単位の並びを評価
-  1. 単位評価  
-  +, - で同じカテゴリーに属していない単位が選択されていたらFailを返して終了。  
-  ~~~
-  Mpa + psi => true  
-  Mpa * Mpa/s => true  
-  Mpa + m => fail  
-  Mpa + kg => fail  
-  ~~~
-
-  2. 計算式評価  
-  ()の数が間違っている。一番最後の)抜きはOK。  
-  ~~~
-  ((100kg/20m2 + 20psi) + 20 => true  
-  (20+10) * 100mpa) => fail  
-  ~~~
-  //, ** など計算式が連続している。  
-
-  3. 単位抜き  
-
-
-#### 3) 単位換算
-  1. メモ書き  
-  \*,/は単位無しの倍数とみなす。  
-  ~~~
-  100 * 20mpa #=> 20000Mpa  
-  ~~~
-  +,-並びに記載されているもので単位が一つしかない時は、その単位とする。  
-  ~~~
-  100 + 20psi => 100Mpa + 20psi  
-  ~~~
-  2. 単位換算表(yml形式)  
-
-
-#### 4) 数値計算
-  1. 数式だけを取り出す  
-  2. evalを使用して計算する  
-
-#### 5) 単位計算
-  1. 単位を計算するメソッドの用意
-
-
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -78,9 +16,49 @@ Or install it yourself as:
 
     $ gem install engineering_calculator
 
-## Usage
+For web site of calculator, please visit following link.
+https://eng.eastazy.work/calculator
 
-TODO: Write usage instructions here
+### How to use
+
+If your current directory is engineer_calcululator gem,
+please run "Rackup". Then access to http://localhost:9292/ , you can find web page.
+
+Add following into your code.
+```ruby
+require 'engineer_calculator'
+```
+
+Then make instance.
+
+```ruby
+eng_calc = Engineer::Calculator.new
+```
+
+After make instance you can get calculation reulst by "calc" method.
+Conversion always perform by SI base unit.
+```ruby
+eng_calc.calc("10cm+20m")
+=> {:value=>"20.1", :unit=>"m", :convert_formula=>"0.1(m)+ 20(m) "}
+```
+
+After calc method, you can get alter unit result by "alter" method.
+```ruby
+eng_calc.alter
+=> {:si_unit=>[["Length", nil]],
+  :variable=>[["Length",
+    [["Å", 201000000000.0],
+    ["mil", 791338.5826771759],
+    ["in", 791.3385826771759],
+    ["ft", 65.94488188976331],
+    ["yd", 21.98162729658777], ...]]]}
+```
+
+If conversion has any error, you can get error message by "error" method.
+```ruby
+eng_calc.error
+=> {}
+```
 
 ## Development
 

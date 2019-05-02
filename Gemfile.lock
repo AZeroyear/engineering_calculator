@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    engineer_calculator (0.1.0)
+    engineer_calculator (1.0.0)
 
 GEM
   remote: https://rubygems.org/
@@ -19,4 +19,4 @@ DEPENDENCIES
   rake (~> 10.0)
 
 BUNDLED WITH
-   1.16.6
+   1.17.2
