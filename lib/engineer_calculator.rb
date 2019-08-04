@@ -34,6 +34,7 @@ module Engineer
           value << x[0].to_s.sub("^","**") + (x[0].to_s =~ Regexp.union(reg(:ari),/(?:#{reg(:num)})*(?:#{reg(:double)})+/) ? "" : ".rationalize") unless x[0].empty?
           units << x[1]
         end
+        p units
         @opt = nil
         converted_formula = formula.inject(String.new){ |f, v| f << v[0].to_s + (v[0] != v[1].join ? v[1].join : " ") }
         return @result = { value: eval(value).to_f, unit: units.flatten.join, convert_formula: converted_formula } unless @error[:unit_not_found].nil?
@@ -272,21 +273,6 @@ module Engineer
       else
         [1, kind_of_unit[:base]]
       end
-    end
-
-    def split_test(formula)
-      unit_array = []
-      formula_pre = formula.to_s.delete(" ")
-      formula_pre.scan(/(#{reg(:tri)})|(?:(#{reg(:num)}(?:#{reg(:double)})*)((?:\/?\(?\/?[a-z]+\d*(?:\*[a-z])*(?:\W*[a-z]\d*\)*)*)(?:-*\d[^[a-z]])*\)?))|(#{reg(:ari)})|((?:#{reg(:num)})*(?:#{reg(:double)})?)/i).each do |data|
-        unit_array << { value: (data[0] || data[1] || data[3] || data[4]), unit: (data[2] || data[3]) }
-      end
-      unit_array.each_with_index do |data, index|
-        if data[:unit] =~ /^[^\(].+\)$/
-          data[:unit].gsub!(/.$/,'')
-          unit_array.insert(index+1, { value: ")", unit: ")" })
-        end
-      end
-      unit_array
     end
 
     def split_unit(formula)

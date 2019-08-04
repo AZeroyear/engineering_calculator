@@ -1,0 +1,174 @@
+Length:
+  Å: value/10000000000r
+  thou, mil, milli-inch: value*0.0000254r
+  inch, in, ": value*0.0254r
+  feet, ft, ': value*0.304r
+  yard, yd: value*0.9144r
+  mile, mi: value*1609.344r
+  寸: value*1/33
+  尺: value*0.30303r
+  鯨尺: value*0.37879r
+  丈: value*3.0303r
+  間: value*1.818r
+  町, 丁: value*109.09091r
+  里: value*3927.273r
+  天文単位, astronomical-unit, AU: value*149597870700r
+  光年, light-year, ly: value*9460730472580800r
+  パーセク, parsec, pc: value*3.085677581e16.rationalize
+  海里, nautical-mile: value*1852r
+
+Weight:
+  g, gram: value*1000r
+  ton: value*0.001r
+  grain, gr: value/15432.358352941r
+  dram, dr: value/564.38339119329r
+  ounce, oz: value/35.27396194958r
+  pound, lb: value/2.2046226218488r
+  stone, st: value*6.35029318r
+  quarter: value*12.70058636r
+  short-ton, sh-tn, s.t.: value*907.18474r
+  分: value/2666.6666666667r
+  匁: value/266.66666666667r
+  百目: value/2.6666666666667r
+  斤: value/1.6666666666667r
+
+Time:
+  Planck time, tp: value*5.39121E-44.rationalize
+  au: value*4.1341373345192E+16.rationalize
+  min: value*60r
+  hour: value*3600r
+  day: value*86400r
+  week: value*604800r
+  month: value*2.628E+6
+  year: value*31535965.4396976r
+  century: value*3153600000r
+
+Tempreture:
+  K: value
+  °C, degree, Celsius: "value-273.15r"
+  °F, Fahrenheit: "value*1.8r-459.67r"
+  °R, Rankine scale: "value*1.8r"
+
+Area:
+  are, a: value*100r
+  ha: value*10000r
+  sq-in, in2: value*0.00064516r
+  sq-ft, ft2: value*0.09290304r
+  sq-yd, yd2: value*0.83612736r
+  rood, ro: value*1011.7141056r
+  acre, ac: value*4046.8564224r
+  sq-mi, mi2: value*2589988.110336r
+  坪: value*3.3057851239669r
+  畝: value*99.173553719008r
+  反: value*991.73553719008r
+  町: value*9917.3553719008r
+
+Volume:
+  ml: value/1000000r
+  cl: value/100000r
+  dl: value/10000r
+  l: value/1000r
+  小さじ: value*5.0E-6.rationalize
+  大さじ: value*1.5E-5.rationalize
+  cc: value*1.0E-6.rationalize
+  cu-in, in3: value*1.6387064E-5.rationalize
+  cu-ft, ft3: value*0.028316846592r
+  ac-ft: value*1233.4818375475r
+  U.S.fluid-gallon, gallon, gal, U.S.gal, USG: value*0.003785411784r
+  Imperial-gallon, imp.gal: value*0.00454609r
+  Winchester-bushel, bushel, bsh., bu: value*0.03523907016688r
+  us-fluid-once, fl-oz: value*2.84130625E-5.rationalize
+  uk-fluid-ounce: value*2.95735295625E-5.rationalize
+  us-gill, gi: value*0.00011829411825r
+  uk-gill, uk-gi: value*0.0001420653125r
+  us-pint, pt: value*0.000473176473r
+  uk-pint, uk-pt: value*0.00056826125r
+  us-quart, qt: value*0.000946352946r
+  uk-quart, uk-qt: value*0.0011365225r
+  us-barrel, bbl: value*0.119240471196r
+  uk-barrel, uk-bbl: value*0.16365924r
+  勺: value*1.8039068369647E-5.rationalize
+  合: value*0.00018039068369647r
+  升: value*0.0018039068369647r
+  斗: value*0.018039068369647r
+  石: value*0.18039068369647r
+
+Power:
+  dyn: value*100000r
+  N: value
+  kgf: value*0.10197162129779r
+  lbf: value*0.22480894309971r
+  pdl: value*7.2330138512099r
+
+Pressure, Stress:
+  N/mm2: value*1E-06.rationalize
+  bar: value*100000r
+  atm: value*101325r
+  at: value*98066.5r
+  kgf/cm2: value/1.0197162129779E-05.rationalize
+  mmH2O: value*9.80665r
+  cmH2O: value*98.0665r
+  mmH2O(3.98°C): value*9.80638r
+  cmH2O(3.98°C): value*98.0638r
+  mmHg: value*133.322387415r
+  inHg: value*3386.388640341r
+  torr: value*133.32236842105r
+  psi: value*6894.7572931684r
+
+Electric power:
+  mW: value/1000000r
+  W: value/1000r
+  kW: value
+  dBm: value/60r
+  kgfm/s: value/101.97162129779r
+  PS: value/1.3596216173039r
+  HP: value/1.341022089595r
+  ft.lbf/s: value/737.56214927727r
+  cal/s: value/238.8458966275r
+  kcal/s: value/0.2388458966275r
+  BTU/s: value/0.94781712031332r
+
+Energy, Work, Heat:
+  erg: value/10000000r
+  kWh: value/2.7777777777778E-07
+  calth: value/0.23900573613767r
+  kcalth: value/2.3900573613767E-04.rationalize
+  calIT: value/0.2388458966275r
+  kcalIT: value/2.388458966275E-04.rationalize
+  eV: value/6.2415094796077E+18.rationalize
+  BTU: value/9.4781712031332E-04.rationalize
+  ftlbf: value/0.73756214945755r
+  ftpdl: value/23.730360457056r
+  atm: value/0.0098692326671601r
+
+Speed, Velocity:
+  fps: value/3.2808398950131r
+  fpm: value/196.85039370079r
+  fph: value/11811.023622047r
+  mps: value/0.00062137119223733r
+  mpm: value/0.03728227153424r
+  mph: value/2.2369362920544r
+  kn: value/1.9438444924406r
+  Mach: value/0.0029411764705882r
+
+Acceleration:
+  km/h/s: value/3.6r
+  Gal: value/100r
+  fps2: value/3.2808398950131r
+  fpm/s: value/196.85039370079r
+  fph/s: value/11811.023622047r
+  mps2: value/6.2137119223733E-04.rationalize
+  mpm/s: value/0.03728227153424r
+  mph/s: value/2.2369362920544r
+  kn/s: value/1.9438444924406r
+  G: value/0.10197162129779r
+
+Angle:
+  °: value
+  ′: value/60r
+  ″: value/3,600r
+  grad: value/1.1111111111111r
+  rad: value/0.017453292519943r
+  mil: value/17.777777777778r
+  /%: value/1.7455064928218r
+  ‰: value/17.455064928218r

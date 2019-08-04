@@ -1,0 +1,10 @@
+Tempreture:
+  K: input
+  °C, degree, Celsius: input-273.15r
+  °F, Fahrenheit: input*1.8r-459.67r
+  °R, Rankine scale: input*1.8r
+
+Length:
+  m: input
+  inch, in, ": input*39.370078740158
+  feet, ft, ': input*3.2808398950131
