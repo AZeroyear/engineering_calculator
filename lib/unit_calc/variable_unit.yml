@@ -18,19 +18,19 @@ Length:
   海里, nautical-mile: value*1852r
 
 Weight:
-  g, gram: value*1000r
-  ton: value*0.001r
-  grain, gr: value/15432.358352941r
-  dram, dr: value/564.38339119329r
-  ounce, oz: value/35.27396194958r
-  pound, lb: value/2.2046226218488r
-  stone, st: value*6.35029318r
-  quarter: value*12.70058636r
-  short-ton, sh-tn, s.t.: value*907.18474r
-  分: value/2666.6666666667r
-  匁: value/266.66666666667r
-  百目: value/2.6666666666667r
-  斤: value/1.6666666666667r
+  g, gram: value/1000r
+  ton: value/0.001r
+  grain, gr: value*15432.358352941r
+  dram, dr: value*564.38339119329r
+  ounce, oz: value*35.27396194958r
+  pound, lb: value*2.2046226218488r
+  stone, st: value/6.35029318r
+  quarter: value/12.70058636r
+  short-ton, sh-tn, s.t.: value/907.18474r
+  分: value*2666.6666666667r
+  匁: value*266.66666666667r
+  百目: value*2.6666666666667r
+  斤: value*1.6666666666667r
 
 Time:
   Planck time, tp: value*5.39121E-44.rationalize

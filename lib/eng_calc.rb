@@ -19,7 +19,7 @@ module Eng
       begin
         c = { value: "", unit: [], si_formula: "", error: [] }
 
-        split_value_unit(formula.gsub("⋅","*")).map do |e_formula|
+        split_value_unit(formula.gsub("⋅","*").gsub("÷","/")).map do |e_formula|
           if e_formula[:unit].nil?
             c[:value] << e_formula[:value].to_f.to_s + "r"
             c[:si_formula] << e_formula[:value]
@@ -43,19 +43,26 @@ module Eng
           si_formula: c[:si_formula] }
 
       rescue StandardError, SyntaxError
-        { value: "error", unit: "", error: "undifined formula", si_formula: formula}
+        { value: "error", unit: "", error: [{ undifined: "undifined formula" }], si_formula: formula}
       end
     end
 
     def each_value(value: , si_unit: nil, kind: nil)
       value = value.to_f.rationalize
       kind = Unit.kind_by_si(si_unit) if si_unit
-      return false unless kind || Unit.variable[kind]
-      results = Unit.variable[kind].map do |unit|
-        { unit: unit[0],
-          value: eval(liner_function(unit[1])).to_f }
+      return [{kind: false, result: false}] unless kind
+
+      kind.inject([]) do |a,k|
+        if Unit.variable[k]
+          results = Unit.variable[k].map do |unit|
+            { unit: unit[0],
+              value: eval(liner_function(unit[1])).to_f }
+          end
+        else
+          results = nil
+        end
+        a << { kind: k, result: results }
       end
-      { kind: kind, result: results }
     end
   end
 end

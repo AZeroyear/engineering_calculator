@@ -5,7 +5,7 @@
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'engineering_calculator'
+gem 'eng_calc'
 ```
 
 And then execute:
@@ -26,13 +26,13 @@ please run "Rackup". Then access to http://localhost:9292/ , you can find web pa
 
 Add following into your code.
 ```ruby
-require 'engineer_calculator'
+require 'eng_calc'
 ```
 
 Then make instance.
 
 ```ruby
-eng_calc = Engineer::Calculator.new
+eng_calc = Eng::Calc.new
 ```
 
 After make instance you can get calculation reulst by "calc" method.

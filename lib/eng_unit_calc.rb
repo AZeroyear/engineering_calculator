@@ -6,6 +6,7 @@ module Eng
     def calc_unit(units)
       @error = {}
       units = split_by_ari(units) unless units.class == Array
+      units.push(")").unshift("(")
       par = parenthesis_unit(units)
       par.reverse_each do |index|
         by_value = units[index[0]..index[1]]

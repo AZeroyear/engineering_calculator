@@ -59,9 +59,9 @@ module Eng
     def convert(value: , unit: )
       values = nil
       first_unit = false
-      convert_unit = split_by_ari(unit).map do |e_unit|
+      convert_unit = unit.split(/(\*|\/)/).map do |e_unit|
         if e_unit.empty?
-        elsif e_unit =~ /(#{operator_reg(:ari)})/
+        elsif e_unit =~ /(\*|\/)/
           values = e_unit
           if e_unit == "/" && !first_unit
             values = value.to_s + "/"
@@ -141,7 +141,6 @@ module Eng
             num = si_unit[:num] || 1
           end
         end
-
         result = find_all(unit)
 
         if !result && !opt
@@ -166,11 +165,12 @@ module Eng
       end
 
       def kind_by_si(unit)
-        s_unit = unit_arrange(split_by_ari(unit))
+        s_unit = unit_arrange(multi_div_unit(split_by_ari(unit)))
+        a = []
         si_base.merge(si_derived).each do |e_unit|
-          return e_unit[0] if s_unit == unit_arrange(split_by_ari(e_unit[1]))
+          a << e_unit[0] if s_unit == unit_arrange(multi_div_unit(split_by_ari(e_unit[1])))
         end
-        false
+        a || false
       end
 
       def to_si(kind_unit)

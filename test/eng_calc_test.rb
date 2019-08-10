@@ -17,4 +17,7 @@ class EngineeringCalculatorTest < Minitest::Test
     assert_equal @eng_calc.calc("2cm*300cm/s"),{:value=>0.06, :unit=>"m2/s", :error=>[{}], :si_formula=>"0.02 (m) * 3.0 (m/s)"}
   end
 
+  def test_split_value_unit
+    assert_equal @eng_calc.split_value_unit("1百目"), [{value: "1", unit: "百目"}]
+  end
 end

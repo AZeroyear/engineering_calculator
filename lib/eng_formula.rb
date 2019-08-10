@@ -4,13 +4,14 @@ module Eng
       unit_array = []
       formula_pre = formula.to_s.delete(" ")
       formula_pre.scan(/(#{operator_reg(:tri)})|
+                      (?:(#{operator_reg(:num)}(?:#{operator_reg(:double)})*)([^#{operator_reg(:num)}#{operator_reg(:double)}#{operator_reg(:ari)}]+))|
                       (?:(#{operator_reg(:num)}(?:#{operator_reg(:double)})*)((?:\/?\(?\/?[a-z]+\d*(?:\*[a-z])*(?:\W*[a-z]\d*\)*)*)(?:\d[^[a-z]])*\)?))|
                       (#{operator_reg(:ari)})|
                       ((?:#{operator_reg(:num)})*(?:#{operator_reg(:double)})?)/ix)
                       .each do |data|
                         unit_array << {
-                          value: (data[0] || data[1] || data[3] || data[4]),
-                          unit: (data[2] || data[3]) }
+                          value: (data[0] || data[3] || data[5] || data[6] || data[1]),
+                          unit: (data[4] || data[5]) || data[2] }
       end
 
       unit_array.each_with_index do |data, index|
@@ -36,7 +37,7 @@ module Eng
     end
 
     def split_by_ari(formula)
-      formula.split((/(#{operator_reg(:ari)})/))
+      formula.split((/(#{operator_reg(:ari)})/)).reject(&:empty?)
     end
 
     def liner_function(formula)

@@ -45,6 +45,7 @@ Force, Weight: kg*m/s2
 Pressure, Stress: kg/(m*s2)
 Energy, Work, Heat: kg*m2/s2
 Power, Radiant Flux: kg*m2/s3
+Power: kg*m/s2
 Electric Charge Or Quantity Of Electricity: s*A
 Voltage, Electrical Potential Difference, Electromotive Force: kg*m2/(s3*A)
 Electrical Capacitance: s4A2/(kg*m2)
