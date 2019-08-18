@@ -13,13 +13,13 @@ module Eng
 
     attr_accessor :error, :alter
     def calc(formula)
-
+      
       return nil unless formula
 
       begin
         c = { value: "", unit: [], si_formula: "", error: [] }
 
-        split_value_unit(formula.gsub("⋅","*").gsub("÷","/")).map do |e_formula|
+        split_value_unit(formula.gsub("×","*").gsub("⋅","*").gsub("÷","/")).map do |e_formula|
           if e_formula[:unit].nil?
             c[:value] << e_formula[:value].to_f.to_s + "r"
             c[:si_formula] << e_formula[:value]

@@ -54,10 +54,10 @@ Electrical Conductance: s3*A2/(kg*m2)
 Magnetic Flux: kg*m2/(s2*A)
 Magnetic Field Strength, Magnetic Flux Density: kg/(s2*A)
 Electrical Inductance: kg*m2/(s2*A2)
-Temperature: K
 Luminous Flux: cd
 Illuminance: cd/m2
 Radioactivity (Decays Per Unit Time): /s
 Absorbed Dose (Of Ionizing Radiation): m2/s2
 Equivalent Dose (Of Ionizing Radiation): m2/s2
 Catalytic Activity: mol/s
+Viscosity: (kg/m)*s

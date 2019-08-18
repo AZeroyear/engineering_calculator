@@ -5,7 +5,7 @@ Length:
   feet, ft, ': value*0.304r
   yard, yd: value*0.9144r
   mile, mi: value*1609.344r
-  寸: value*1/33
+  寸: value/33r
   尺: value*0.30303r
   鯨尺: value*0.37879r
   丈: value*3.0303r
@@ -20,34 +20,34 @@ Length:
 Weight:
   g, gram: value/1000r
   ton: value/0.001r
-  grain, gr: value*15432.358352941r
-  dram, dr: value*564.38339119329r
-  ounce, oz: value*35.27396194958r
-  pound, lb: value*2.2046226218488r
-  stone, st: value/6.35029318r
-  quarter: value/12.70058636r
-  short-ton, sh-tn, s.t.: value/907.18474r
-  分: value*2666.6666666667r
-  匁: value*266.66666666667r
-  百目: value*2.6666666666667r
-  斤: value*1.6666666666667r
+  grain, gr: value/15432.358352941r
+  dram, dr: value/564.38339119329r
+  ounce, oz: value/35.27396194958r
+  pound, lb: value/2.2046226218488r
+  stone, st: value*6.35029318r
+  quarter: value*12.70058636r
+  short-ton, sh-tn, s.t.: value*907.18474r
+  分: value/2666.6666666667r
+  匁: value/266.66666666667r
+  百目: value/2.6666666666667r
+  斤: value/1.6666666666667r
 
 Time:
-  Planck time, tp: value*5.39121E-44.rationalize
-  au: value*4.1341373345192E+16.rationalize
+  Planck-time, tp: value*5.39116e-44.rationalize
+  au: value*4.1341373345192e+16.rationalize
   min: value*60r
   hour: value*3600r
   day: value*86400r
   week: value*604800r
-  month: value*2.628E+6
+  month: value*2.628e+6
   year: value*31535965.4396976r
   century: value*3153600000r
 
 Tempreture:
   K: value
-  °C, degree, Celsius: "value-273.15r"
-  °F, Fahrenheit: "value*1.8r-459.67r"
-  °R, Rankine scale: "value*1.8r"
+  °C, degree, Celsius: value+272.15r
+  °F, Fahrenheit: value*0.5555555555555556r+255.37222222222223r
+  °R, Rankine scale: value/1.8r
 
 Area:
   are, a: value*100r
@@ -68,17 +68,17 @@ Volume:
   cl: value/100000r
   dl: value/10000r
   l: value/1000r
-  小さじ: value*5.0E-6.rationalize
-  大さじ: value*1.5E-5.rationalize
-  cc: value*1.0E-6.rationalize
-  cu-in, in3: value*1.6387064E-5.rationalize
+  小さじ: value*5.0e-6.rationalize
+  大さじ: value*1.5e-5.rationalize
+  cc: value*1.0e-6.rationalize
+  cu-in, in3: value*1.6387064e-5.rationalize
   cu-ft, ft3: value*0.028316846592r
   ac-ft: value*1233.4818375475r
   U.S.fluid-gallon, gallon, gal, U.S.gal, USG: value*0.003785411784r
   Imperial-gallon, imp.gal: value*0.00454609r
   Winchester-bushel, bushel, bsh., bu: value*0.03523907016688r
-  us-fluid-once, fl-oz: value*2.84130625E-5.rationalize
-  uk-fluid-ounce: value*2.95735295625E-5.rationalize
+  us-fluid-once, fl-oz: value*2.84130625e-5.rationalize
+  uk-fluid-ounce: value*2.95735295625e-5.rationalize
   us-gill, gi: value*0.00011829411825r
   uk-gill, uk-gi: value*0.0001420653125r
   us-pint, pt: value*0.000473176473r
@@ -87,25 +87,25 @@ Volume:
   uk-quart, uk-qt: value*0.0011365225r
   us-barrel, bbl: value*0.119240471196r
   uk-barrel, uk-bbl: value*0.16365924r
-  勺: value*1.8039068369647E-5.rationalize
+  勺: value*1.8039068369647e-5.rationalize
   合: value*0.00018039068369647r
   升: value*0.0018039068369647r
   斗: value*0.018039068369647r
   石: value*0.18039068369647r
 
 Power:
-  dyn: value*100000r
+  dyn: value/100000r
   N: value
-  kgf: value*0.10197162129779r
-  lbf: value*0.22480894309971r
-  pdl: value*7.2330138512099r
+  kgf: value/0.10197162129779r
+  lbf: value/0.22480894309971r
+  pdl: value/7.2330138512099r
 
 Pressure, Stress:
-  N/mm2: value*1E-06.rationalize
+  N/mm2: value*1e-06.rationalize
   bar: value*100000r
   atm: value*101325r
   at: value*98066.5r
-  kgf/cm2: value/1.0197162129779E-05.rationalize
+  kgf/cm2: value/1.0197162129779e-05.rationalize
   mmH2O: value*9.80665r
   cmH2O: value*98.0665r
   mmH2O(3.98°C): value*9.80638r
@@ -130,13 +130,13 @@ Electric power:
 
 Energy, Work, Heat:
   erg: value/10000000r
-  kWh: value/2.7777777777778E-07
+  kWh: value/2.7777777777778e-07
   calth: value/0.23900573613767r
-  kcalth: value/2.3900573613767E-04.rationalize
+  kcalth: value/2.3900573613767e-04.rationalize
   calIT: value/0.2388458966275r
-  kcalIT: value/2.388458966275E-04.rationalize
-  eV: value/6.2415094796077E+18.rationalize
-  BTU: value/9.4781712031332E-04.rationalize
+  kcalIT: value/2.388458966275e-04.rationalize
+  eV: value/6.2415094796077e+18.rationalize
+  BTU: value/9.4781712031332e-04.rationalize
   ftlbf: value/0.73756214945755r
   ftpdl: value/23.730360457056r
   atm: value/0.0098692326671601r
@@ -157,7 +157,7 @@ Acceleration:
   fps2: value/3.2808398950131r
   fpm/s: value/196.85039370079r
   fph/s: value/11811.023622047r
-  mps2: value/6.2137119223733E-04.rationalize
+  mps2: value/6.2137119223733e-04.rationalize
   mpm/s: value/0.03728227153424r
   mph/s: value/2.2369362920544r
   kn/s: value/1.9438444924406r
@@ -172,3 +172,9 @@ Angle:
   mil: value/17.777777777778r
   /%: value/1.7455064928218r
   ‰: value/17.455064928218r
+
+Viscosity:
+  poise: value*10
+  cpoise: value*1000
+  (kg/m)*h: value*3600
+  (lb/ft)*s: value*0.671969

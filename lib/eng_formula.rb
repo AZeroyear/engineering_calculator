@@ -4,7 +4,7 @@ module Eng
       unit_array = []
       formula_pre = formula.to_s.delete(" ")
       formula_pre.scan(/(#{operator_reg(:tri)})|
-                      (?:(#{operator_reg(:num)}(?:#{operator_reg(:double)})*)([^#{operator_reg(:num)}#{operator_reg(:double)}#{operator_reg(:ari)}]+))|
+                      (?:(#{operator_reg(:num)}(?:#{operator_reg(:double)})*)([^#{operator_reg(:num)}#{operator_reg(:double)}#{operator_reg(:ari)}]+\w*))|
                       (?:(#{operator_reg(:num)}(?:#{operator_reg(:double)})*)((?:\/?\(?\/?[a-z]+\d*(?:\*[a-z])*(?:\W*[a-z]\d*\)*)*)(?:\d[^[a-z]])*\)?))|
                       (#{operator_reg(:ari)})|
                       ((?:#{operator_reg(:num)})*(?:#{operator_reg(:double)})?)/ix)
@@ -41,10 +41,10 @@ module Eng
     end
 
     def liner_function(formula)
-      formula_arr = formula.split(/(\*|\/|\+|-)/)
+      formula_arr = formula.split(/(#{operator_reg(:num)})|(value)|(\*)|(\/)|(\+)|(-)/).reject{|v| v == ""}
       input_num = formula_arr.index("value")
       mv_num = formula_arr.index{ |n| n =~ /\*|\// }
-      pm_num = formula_arr.index{ |n| n =~ /\+|-/ }
+      pm_num = formula_arr.index{ |n| n == "+" || n == "-" }
 
       if mv_num
         a_ari = formula_arr[mv_num]
@@ -74,56 +74,6 @@ module Eng
       b_ari == "+" ? b_ari = "-" : b_ari = "+"
 
       "value" + a_ari + a.to_s + b_ari + b.to_s + a_ari + a.to_s
-    end
-
-    def new_liner_function(formula)
-      fl_arr = formula.split(/(\*|\/|\+|-)/)
-      value_i = fl_arr.index("value")
-
-      a = []
-      b = []
-      pl = false
-      (value_i .. fl_arr.size - 1).each do |i|
-        if pl || fl_arr[i] == "+" || fl_arr[i] == "-"
-          b << reverse_operator(fl_arr[i])
-          pl = true
-        else
-          a << reverse_operator(fl_arr[i])
-        end
-      end
-
-      if value_i != 0
-        (0 .. value_i - 1).reverse_each do |i|
-          if fl_arr[i] == "+" || fl_arr[i] == "-" || i == 0
-            (i .. value_i - 1).reverse_each do |ii|
-              a.unshift(reverse_operator(fl_arr[ii]))
-            end
-
-            if i != 0
-              (0..i).each do |ii|
-                b.unshift(reverse_operator(fl_arr[ii], false))
-              end
-            end
-            break
-          end
-        end
-      end
-      a.join + "+(" + b.join + ")/value"
-    end
-
-    def reverse_operator(operator, opt = true)
-      case operator
-      when "+"
-        "-"
-      when "-"
-        "+"
-      when "*"
-        opt ? "/" : "*"
-      when "/"
-        opt ? "*" : "/"
-      else
-        operator
-      end
     end
   end
 end

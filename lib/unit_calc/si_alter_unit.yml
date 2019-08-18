@@ -89,14 +89,6 @@ Radiant Intensity:
 Spectral Intensity:
   - W/(sr*m)
   - watt per steradian metre
-Speed, Velocity:
-  - m/s
-Acceleration:
-  - m/s2
-Jerk, Jolt:
-  - m/s3
-Snap, Jounce:
-  - m/s4
 Angular Velocity:
   - rad/s
 Angular Acceleration:
@@ -209,3 +201,6 @@ Catalytic Activity:
   - kat
   - katal
   - mol/s
+
+Viscosity:
+  - Pa*s
